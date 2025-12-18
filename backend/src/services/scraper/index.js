@@ -1,9 +1,24 @@
-import { scrapeIEEE } from "./ieee.scraper.js";
+
+import { scrapeAllTopics } from "./ieee.scraper.js";
 import { scrapeGoogleInternships } from "./google.scraper.js";
 
 export const runAllScrapers = async () => {
-  const conferences = await scrapeIEEE();
-  const opportunities = await scrapeGoogleInternships();
+  // Scrape conferences from AllConferenceAlert / IEEE
+  const conferences = await scrapeAllTopics();  
+
+  // Scrape Google research-only opportunities
+  const opportunities = await scrapeGoogleInternships();  
 
   return { conferences, opportunities };
 };
+
+// ES Module test run
+if (import.meta.url === `file://${process.argv[1]}`) {
+  (async () => {
+    const result = await runAllScrapers();
+
+    console.log("✅ Conferences:");
+
+    console.log("✅ Research Opportunities:");
+  })();
+}

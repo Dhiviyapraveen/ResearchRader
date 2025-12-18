@@ -1,7 +1,12 @@
+import dotenv from "dotenv";
+dotenv.config();
+
+import mongoose from "mongoose";
 import axios from "axios";
 import * as cheerio from "cheerio";
+import Conference from "../../models/Conference.js";
 
-// Map of topics and their URLs on allconferencealert.net
+// 🔹 Topics
 const TOPICS = [
   { name: "Business and Economics", url: "https://allconferencealert.net/business-and-economics.php" },
   { name: "Education", url: "https://allconferencealert.net/education.php" },
@@ -16,8 +21,8 @@ const TOPICS = [
   { name: "Physical and Life Sciences", url: "https://allconferencealert.net/physical-and-life-sciences.php" },
   { name: "Sports Science", url: "https://allconferencealert.net/topics/sport-science.php" },
 ];
-
-export const scrapeAllTopics = async () => {
+// 🔹 Scraper
+const scrapeAllTopics = async () => {
   const allConferences = [];
 
   for (const topic of TOPICS) {
@@ -35,7 +40,7 @@ export const scrapeAllTopics = async () => {
         const link = titleEl.attr("href");
         const venue = $(el).find("td:nth-child(3)").text().trim();
 
-        if (title) {
+        if (title && link) {
           allConferences.push({
             title,
             date,
@@ -48,15 +53,34 @@ export const scrapeAllTopics = async () => {
         }
       });
 
-      console.log(`✅ Scraped ${topic.name}: ${allConferences.length} conferences so far`);
+      console.log(`✅ Scraped ${topic.name}`);
     } catch (err) {
       console.error(`❌ Error scraping ${topic.name}:`, err.message);
     }
   }
 
-  console.log(`\n✅ Total conferences scraped: ${allConferences.length}`);
-  return allConferences;
+  console.log(`📊 Total scraped: ${allConferences.length}`);
+
+  if (allConferences.length > 0) {
+    await Conference.insertMany(allConferences);
+    console.log("💾 Data saved to MongoDB");
+  }
 };
 
-// Example run
-scrapeAllTopics().then((data) => console.log(data));
+// 🔹 MAIN EXECUTION (CORRECT ORDER)
+const run = async () => {
+  try {
+    await mongoose.connect(process.env.MONGO_URI);
+    console.log("✅ MongoDB connected");
+
+    await scrapeAllTopics();
+
+  } catch (err) {
+    console.error("❌ Fatal error:", err);
+  } finally {
+    await mongoose.connection.close();
+    console.log("🔌 MongoDB connection closed");
+  }
+};
+
+run();
