@@ -2,12 +2,11 @@ import cron from "node-cron";
 import Conference from "../models/Conference.js";
 import Opportunity from "../models/Opportunity.js";
 import { runAllScrapers } from "../services/scraper/index.js";
-import logger from "../utils/logger.js";
 import { normalizeText } from "../utils/normalizeData.js";
 
 cron.schedule("0 2 * * *", async () => {
   try {
-    logger.info("🔄 Scraping job started");
+    console.log("🔄 Scraping job started");
 
     const { conferences, opportunities } = await runAllScrapers();
 
@@ -27,8 +26,8 @@ cron.schedule("0 2 * * *", async () => {
       );
     }
 
-    logger.info("✅ Scraping job completed");
+    console.log("✅ Scraping job completed");
   } catch (err) {
-    logger.error("❌ Scraping job failed", err);
+    console.error("❌ Scraping job failed", err);
   }
 });

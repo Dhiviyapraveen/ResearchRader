@@ -8,21 +8,51 @@ import Conference from "../../models/Conference.js";
 
 // 🔹 Topics
 const TOPICS = [
-  { name: "Business and Economics", url: "https://allconferencealert.net/business-and-economics.php" },
+  {
+    name: "Business and Economics",
+    url: "https://allconferencealert.net/business-and-economics.php",
+  },
   { name: "Education", url: "https://allconferencealert.net/education.php" },
-  { name: "Health and Medicine", url: "https://allconferencealert.net/health-and-medicine.php" },
-  { name: "Interdisciplinary", url: "https://allconferencealert.net/interdisciplinary.php" },
+  {
+    name: "Health and Medicine",
+    url: "https://allconferencealert.net/health-and-medicine.php",
+  },
+  {
+    name: "Interdisciplinary",
+    url: "https://allconferencealert.net/interdisciplinary.php",
+  },
   { name: "Law", url: "https://allconferencealert.net/law.php" },
-  { name: "Engineering Topics", url: "https://allconferencealert.net/engineering.php" },
-  { name: "Engineering and Technology", url: "https://allconferencealert.net/engineering-and-technology.php" },
-  { name: "Mathematics and Statistics", url: "https://allconferencealert.net/mathematics-and-statistics.php" },
-  { name: "Social Sciences and Humanities", url: "https://allconferencealert.net/social-sciences-and-humanities.php" },
-  { name: "Regional Studies", url: "https://allconferencealert.net/regional-studies.php" },
-  { name: "Physical and Life Sciences", url: "https://allconferencealert.net/physical-and-life-sciences.php" },
-  { name: "Sports Science", url: "https://allconferencealert.net/topics/sport-science.php" },
+  {
+    name: "Engineering Topics",
+    url: "https://allconferencealert.net/engineering.php",
+  },
+  {
+    name: "Engineering and Technology",
+    url: "https://allconferencealert.net/engineering-and-technology.php",
+  },
+  {
+    name: "Mathematics and Statistics",
+    url: "https://allconferencealert.net/mathematics-and-statistics.php",
+  },
+  {
+    name: "Social Sciences and Humanities",
+    url: "https://allconferencealert.net/social-sciences-and-humanities.php",
+  },
+  {
+    name: "Regional Studies",
+    url: "https://allconferencealert.net/regional-studies.php",
+  },
+  {
+    name: "Physical and Life Sciences",
+    url: "https://allconferencealert.net/physical-and-life-sciences.php",
+  },
+  {
+    name: "Sports Science",
+    url: "https://allconferencealert.net/topics/sport-science.php",
+  },
 ];
 // 🔹 Scraper
-const scrapeAllTopics = async () => {
+export const scrapeAllTopics = async () => {
   const allConferences = [];
 
   for (const topic of TOPICS) {
@@ -62,9 +92,16 @@ const scrapeAllTopics = async () => {
   console.log(`📊 Total scraped: ${allConferences.length}`);
 
   if (allConferences.length > 0) {
-    await Conference.insertMany(allConferences);
-    console.log("💾 Data saved to MongoDB");
+    try {
+      // Use ordered: false to continue inserting other docs if one fails (e.g. duplicate)
+      await Conference.insertMany(allConferences, { ordered: false });
+      console.log("💾 Data saved to MongoDB");
+    } catch (e) {
+      console.log("⚠️ Some conferences might be duplicates", e.message);
+    }
   }
+
+  return allConferences;
 };
 
 // 🔹 MAIN EXECUTION (CORRECT ORDER)
@@ -74,7 +111,6 @@ const run = async () => {
     console.log("✅ MongoDB connected");
 
     await scrapeAllTopics();
-
   } catch (err) {
     console.error("❌ Fatal error:", err);
   } finally {
