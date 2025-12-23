@@ -10,4 +10,6 @@ const conferenceSchema = new mongoose.Schema({
   scrapedAt: { type: Date, default: Date.now }
 });
 
-export default mongoose.model("Conference", conferenceSchema);
+const Conference = mongoose.model("Conference", conferenceSchema);
+
+export default Conference;

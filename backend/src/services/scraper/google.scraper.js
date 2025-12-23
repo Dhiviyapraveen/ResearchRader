@@ -120,6 +120,7 @@ async function autoScroll(page) {
 // Test run
 // Test run - Saves to DB when run directly
 if (import.meta.url === `file://${process.argv[1]}`) {
+<<<<<<< HEAD
   (async () => {
     try {
       // Load env vars
@@ -153,3 +154,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     }
   })();
 }
+=======
+  scrapeGoogleInternships();
+}
+>>>>>>> eb60b27 (frontend)

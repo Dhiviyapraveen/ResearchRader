@@ -1,4 +1,3 @@
-
 import { scrapeAllTopics } from "./ieee.scraper.js";
 import { scrapeGoogleInternships } from "./google.scraper.js";
 
@@ -21,4 +20,4 @@ if (import.meta.url === `file://${process.argv[1]}`) {
 
     console.log("✅ Research Opportunities:");
   })();
-}
+} 
